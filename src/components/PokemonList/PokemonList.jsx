@@ -42,7 +42,7 @@ const PokemonList = () => {
       </div>
       <div className='pokemon-list'>
       {
-        pokemonList.map((pokemon) => <Pokemon name={pokemon.name} key={pokemon.id} url={pokemon.image} />)
+        pokemonList.map((pokemon) => <Pokemon name={pokemon.name} key={pokemon.id} url={pokemon.image} id={pokemon.id} />)
       }
       </div>
     </div>
