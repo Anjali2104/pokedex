@@ -1,10 +1,20 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import downloadPokemons from "../utils/downloadPokemons";
 
 function usePokemon(id){
     const POKEMON_DETAILS_URL = 'https://pokeapi.co/api/v2/pokemon/'
     const [pokemon, setPokemon] = useState(null);
-    async function downloadPokemon(id){
+
+    const [pokedexListState , setPokedexListState] = useState({
+        pokemonList : [],
+        pokedexUrl : '',
+        nextUrl : '',
+        prevUrl : '',
+      }); 
+
+
+    async function downloadGivenPokemon(id){
         const response = await axios.get(POKEMON_DETAILS_URL + id);
         const pokemon = response.data;
         setPokemon({
@@ -14,11 +24,20 @@ function usePokemon(id){
             types: pokemon.types,
             image : pokemon.sprites.other.dream_world.front_default
         });
+        const types =  response.data.types.map((t) => t.type.name);
+        return types[0];
     }
-    useEffect(()=>{
-        downloadPokemon(id);
-    },[])
+    
+    async function downloadPokemonAndRelated(id){
+        const type = await downloadGivenPokemon(id);
+        await downloadPokemons(pokedexListState,setPokedexListState, `https://pokeapi.co/api/v2/type/${type}`);
+    }
 
-    return [pokemon] ;
+    useEffect(()=>{
+        downloadPokemonAndRelated(id);
+        window.scrollTo({top : 0, left : 0 , behaviour : 'smooth'});
+    },[id])
+
+    return [pokemon , pokedexListState] ;
 }
 export default usePokemon;
