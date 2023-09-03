@@ -1,45 +1,10 @@
-import axios from 'axios';
+
 import './PokemonList.css'
-import { useEffect, useState } from 'react';
 import Pokemon from '../Pokemon/Pokemon';
+import usePokemonList from '../../hooks/usePokemonList';
 
 const PokemonList = () => {
-    const DEFAULT_URL = 'https://pokeapi.co/api/v2/pokemon';
-    // const [pokemonList , setPokemonList] = useState([]);
-    // const [pokedexUrl ,setPokedexUrl] = useState(DEFAULT_URL);
-    // const [nextUrl ,setNextUrl] = useState(DEFAULT_URL);
-    // const [prevUrl, setPrevUrl] = useState(DEFAULT_URL);
-    const [pokedexListState , setPokedexListState] = useState({
-      pokemonList : [],
-      pokedexUrl : DEFAULT_URL,
-      nextUrl : DEFAULT_URL,
-      prevUrl : DEFAULT_URL
-    });
-
-    async function downloadPokemons(){
-        const response = await axios.get(pokedexListState.pokedexUrl? pokedexListState.pokedexUrl : DEFAULT_URL);
-        const pokemonResults = response.data.results;
-        // setNextUrl(response.data.next);
-        // setPrevUrl(response.data.previous);
-        // setPokedexListState((state) => ({...state, nextUrl : response.data.next , prevUrl:response.data.prev}));
-        const pokemonPromise =  pokemonResults.map((pokemon) => axios.get(pokemon.url))
-        const pokemonListData = await axios.all(pokemonPromise);
-        const pokemonFinalList = pokemonListData.map((pokemonData) => {
-            const pokemon = pokemonData.data;
-            return {
-                id : pokemon.id,
-                name : pokemon.name,
-                image : pokemon.sprites.other.dream_world.front_default,
-                types : pokemon.types
-            }
-        })
-        // setPokemonList(pokemonFinalList);
-        setPokedexListState(( {...pokedexListState, pokemonList: pokemonFinalList,  nextUrl : response.data.next , prevUrl:response.data.prev}));
-    }
-
-    useEffect(()=>{
-        downloadPokemons()
-    },[pokedexListState.pokedexUrl]);
+   const [pokedexListState,setPokedexListState] = usePokemonList();
 
   return (
     <div className='pokemonList-wrapper'>
